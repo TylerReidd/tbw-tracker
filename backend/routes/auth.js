@@ -7,15 +7,22 @@ const jwt = require('jsonwebtoken')
 const JWT_SECRET = process.env.JWT_SECRET
 
 router.get('/signup', (req,res) =>{
-  res.send('hello');
+  res.send('Signup Page');
+})
+router.get('/login', (req,res) =>{
+  res.send('Login Page');
 })
 
+
 router.post('/signup', (req, res) => {
-  const {name, email,password}=req.body
+  const {name, email, password}=req.body
   console.log(req.body)
   if(!email || !name || !password) {
-    return res.status(422).json({error:'Please Fill out all Fields'})
+    
+    return res.status(422).json({error:'Signup Error: Please Fill all fields'})
+    
   }
+  
   bcrypt.hash(password,12)
   .then((hashedpw) => {
     User.findOne({email:email})
@@ -23,7 +30,7 @@ router.post('/signup', (req, res) => {
       if(savedUser){
         return res.status(422).json({error:'User already Exists'})
       }
-      const user=new User({
+      const user= new User({
         email,
         password:hashedpw,
         name,
@@ -49,6 +56,7 @@ router.post('/signup', (req, res) => {
 router.post('/login', (req,res)=>{
   const {email, password}=req.body;
   if(!email || !password) {
+    console.log("req.body : " + req)
     return res.status(422).json({error:'Please add all fields'})
   }
   User.findOne({email:email})
@@ -77,5 +85,11 @@ const login=require('../middleware/login')
 router.get('/protected', (req,res)=>{
   res.send('hello')
 })
+
+
+// router.get('/login', (req,res) =>{
+//   res.send('goodbye');
+// })
+
 
 module.exports = router
